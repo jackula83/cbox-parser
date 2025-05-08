@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 namespace CBoxParser.Test
 {
     [TestClass]
-    public class ParserTest
+    public class UrlParserTest
     {
         private readonly MockHttpMessageHandler _mockHttp;
-        private readonly Parser _sut;
+        private readonly UrlParser _sut;
 
-        public ParserTest()
+        public UrlParserTest()
         {
             _mockHttp = new MockHttpMessageHandler();
-            _sut = new Parser(_mockHttp.ToHttpClient(), 1, "a");
+            _sut = new UrlParser(_mockHttp.ToHttpClient(), 1, "a");
         }
 
         [TestMethod]
@@ -68,6 +68,26 @@ namespace CBoxParser.Test
             var urls = await _sut.Start(parserConfig);
             _mockHttp.VerifyNoOutstandingExpectation();
             Assert.AreEqual(url, urls.FirstOrDefault());
+        }
+
+        [TestMethod]
+        public async Task Start_GivenRegex_ReturnArrayWithMultipleFoundUrl()
+        {
+            var url1 = "http://abc.com/file1.zip";
+            var url2 = "https://www.def.org/file2.zip";
+            var parserConfig = new ParserConfig
+            {
+                StartIndex = 1,
+                Pages = 1,
+                PageIncrement = 0,
+                // lang=regex
+                Pattern = @".\.zip",
+            };
+            this.CreateExpect(parserConfig, $"<a href='{url1}'>my link 1</a><br /><a href='{url2}'>my link 2</a>");
+            var urls = await _sut.Start(parserConfig);
+            _mockHttp.VerifyNoOutstandingExpectation();
+            Assert.AreEqual(url1, urls[0]);
+            Assert.AreEqual(url2, urls[1]);
         }
 
         private void CreateExpect(ParserConfig config, string html = "")

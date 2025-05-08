@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CboxPageParser.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="UrlParser.cs" />
     <Compile Include="ParserConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
